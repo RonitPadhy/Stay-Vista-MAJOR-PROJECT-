@@ -8,33 +8,42 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const path = require("path");
 
-app.set("view engine","ejs");
-app.set("views",path.join(__dirname,"views"));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 const sessionOptions = {
-    secret: "mysupersecretstring",
-    resave: false,
-    saveUninitialized: true,
-  };
+  secret: "mysupersecretstring",
+  resave: false,
+  saveUninitialized: true,
+};
 
-app.use(
-  session(sessionOptions)
-);
+app.use(session(sessionOptions));
 
 app.use(flash());
 
-app.get("/register",(req,res) =>{
-    let { name ="Anonymous" } = req.query;
-    req.session.name = name;
-    console.log(req.session.name);
-    req.flash("Success","User registered successfully");
-    res.redirect("/hello");
+app.use((req,res,next) =>{
+  res.locals.SuccessMsg = req.flash("Success");
+  res.locals.errorMsg = req.flash("error");
+  next();
+})
+
+app.get("/register", (req, res) => {
+  let { name = "Anonymous" } = req.query;
+  req.session.name = name;
+  // console.log(req.session.name);
+  if (name === "Anonymous") {
+    req.flash("error", "User not registered!!");
+  } else {
+    req.flash("Success", "User registered successfully");
+  } 
+  res.redirect("/hello");
 });
 
-app.get("/hello",(req,res) =>{
+app.get("/hello", (req, res) => {
   // res.send(`Hello Mr. ${req.session.name}`);
-  res.render("page.ejs" , {name:req.session.name});
-})
+  // console.log(req.flash("Success"));
+  res.render("page.ejs", { name: req.session.name });
+});
 
 // app.get("/test",(req,res) =>{
 //     res.send("Test is successful");

@@ -43,9 +43,11 @@ const validateListing = (req, res, next) => {
 //Create Route
 router.post(
   "/",
+  validateListing,
   wrapAsync(async (req, res, next) => {
     const newListing = new Listing(req.body.listing);
     await newListing.save();
+    req.flash("Success","Created new listing successfully")
     res.redirect("/listings");
   })
 );
