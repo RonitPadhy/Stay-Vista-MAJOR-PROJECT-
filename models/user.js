@@ -1,4 +1,3 @@
-const { required } = require("joi");
 const mongoose = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose");
 
@@ -9,11 +8,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
 });
+const plugin = passportLocalMongoose.default || passportLocalMongoose;
 
-const User = new Schema({});
-
-User.plugin(passportLocalMongoose);
+userSchema.plugin(plugin);
 
 const UserModel = mongoose.model("User", userSchema);
+module.exports = UserModel;
 
 // username and password will automatically be added by the passport local mongoose

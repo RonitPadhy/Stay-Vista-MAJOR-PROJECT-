@@ -9,10 +9,14 @@ const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
 const { listingSchema, reviewSchema } = require("./schema");
 const Review = require("./models/review");
-const listings = require("./routes/listing");
-const reviews = require("./routes/review");
+const listingRouter = require("./routes/listing");
+const reviewRouter = require("./routes/review");
+const userRouter = require("./routes/user");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user");
 
 main()
   .then(() => {
@@ -45,13 +49,33 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req,res,next) =>{
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 })
-app.use("/listings", listings);
-app.use("/listings/:id/reviews", reviews);
+
+// app.get("/demouser",async(req , res) =>{
+//   let fakeUser = new User({
+//     email : "student@gmail.com",
+//     username : "delta-student"
+//   });
+
+//   let registeredUser = await User.register(fakeUser , "helloworld");
+//   res.send(registeredUser);
+// })
+
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/",userRouter);
 
 //Home route
 app.get(
