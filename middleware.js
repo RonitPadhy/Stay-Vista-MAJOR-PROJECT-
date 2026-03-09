@@ -1,11 +1,19 @@
 const express = require("express");
 const passport = require("passport");
 
+module.exports.isLoggedIn = (req, res, next) => {
+  console.log(req.user);
+  if (!req.isAuthenticated()) {
+    req.session.redirectUrl = req.originalUrl;
+    req.flash("error", "You must be logged in first!!");
+    return res.redirect("/login");
+  }
+  next();
+};
 
-module.exports.isLoggedIn = (req , res , next) => {
-    if(!req.isAuthenticated()){
-        req.flash("error","You must be logged in first!!");
-        return res.redirect("/login");
+module.exports.saveRedirectUrl = (req , res , next) => {
+    if(req.session.redirectUrl){
+        res.locals.redirectUrl = req.session.redirectUrl;
     }
     next();
 }
