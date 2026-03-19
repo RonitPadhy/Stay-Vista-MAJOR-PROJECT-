@@ -11,13 +11,8 @@ const listingSchema = new mongoose.Schema({
     type: String,
   },
   image: {
-    type: String,
-    default:
-      "https://media.istockphoto.com/id/2189735845/photo/serene-urban-lake-with-reflections-of-clouds-and-buildings-under-a-blue-sky-bengaluru-india.jpg?s=2048x2048&w=is&k=20&c=Cru3wPuuIOnHPO5dIwD79Xxn0qJabJs7DRm7wa82bH4=",
-    set: (v) =>
-      v === ""
-        ? "https://media.istockphoto.com/id/2189735845/photo/serene-urban-lake-with-reflections-of-clouds-and-buildings-under-a-blue-sky-bengaluru-india.jpg?s=2048x2048&w=is&k=20&c=Cru3wPuuIOnHPO5dIwD79Xxn0qJabJs7DRm7wa82bH4="
-        : v,
+    url : String,
+    filename : String,
   },
   price: {
     type: Number,

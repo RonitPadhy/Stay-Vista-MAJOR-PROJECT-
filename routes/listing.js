@@ -6,7 +6,8 @@ const passport = require("passport");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware");
 const listingController = require("../controllers/listing.js");
 const multer = require("multer");
-const upload = multer({ dest : "uploads/" })
+const { storage } = require("../cloudConfig.js");
+const upload = multer({ storage })
 
 router
   .route("/")
@@ -14,9 +15,10 @@ router
   .post(
     isLoggedIn,
     validateListing,
+    upload.single("listing[image]"),
     wrapAsync(listingController.createListing),
   );
-
+  
   //New Route 
   router.get("/new",isLoggedIn , listingController.renderNewForm);
 router
