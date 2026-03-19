@@ -5,6 +5,8 @@ const Listing = require("../models/listing");
 const passport = require("passport");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware");
 const listingController = require("../controllers/listing.js");
+const multer = require("multer");
+const upload = multer({ dest : "uploads/" })
 
 router
   .route("/")
