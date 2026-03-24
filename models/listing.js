@@ -11,8 +11,8 @@ const listingSchema = new mongoose.Schema({
     type: String,
   },
   image: {
-    url : String,
-    filename : String,
+    url: String,
+    filename: String,
   },
   price: {
     type: Number,
@@ -34,6 +34,30 @@ const listingSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  // geometry: {
+  //   location: {
+  //     type: {
+  //       type: String, 
+  //       enum: ["Point"], 
+  //       required: true,
+  //     },
+  //     coordinates: {
+  //       type: [Number],
+  //       required: true,
+  //     },
+  //   },
+  // },
+  geometry: {
+		type: {
+			type: String, // Don't do `{ location: { type: String } }`
+			enum: ["Point"], // 'location.type' must be 'Point'
+			required: true,
+		},
+		coordinates: {
+			type: [Number],
+			required: true,
+		},
+	},
 });
 
 listingSchema.post("findOneAndDelete", async (listing) => {
