@@ -16,11 +16,13 @@ const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user");
 
+const dbUrl = process.env.ATLASDB_URL;
 main()
   .then(() => {
     console.log("Connection successful");
@@ -28,7 +30,7 @@ main()
   .catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/StayVista");
+  await mongoose.connect(dbUrl);
 }
 
 app.set("view engine", "ejs");
@@ -38,7 +40,16 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
+const store = MongoStore.create({
+   mongoUrl : dbUrl,
+   crypto : {
+    secret : "mysupersecretcode"
+   },
+   touchAfter : 24 * 3600,
+}); 
+
 const sessionOptions = {
+  store,
   secret: "mysupersecretcode",
   resave: false,
   saveUninitialized: true,
@@ -66,16 +77,6 @@ app.use((req,res,next) =>{
   res.locals.currUser = req.user; 
   next();
 })
-
-// app.get("/demouser",async(req , res) =>{
-//   let fakeUser = new User({
-//     email : "student@gmail.com",
-//     username : "delta-student"
-//   });
-
-//   let registeredUser = await User.register(fakeUser , "helloworld");
-//   res.send(registeredUser);
-// })
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
